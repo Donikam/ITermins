@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>ITermins - термины из IT сферы</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f1f5f9;
+            font-family: system-ui, 'Segoe UI', 'Inter', 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+            line-height: 1.5;
+            color: #0f172a;
+            padding: 24px 20px 60px;
+        }
+
+        .glossary-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #1e293b, #2d3a4b);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+            letter-spacing: -0.3px;
+            display: inline-block;
+        }
+
+        .sub {
+            color: #475569;
+            margin-top: 8px;
+            font-size: 1rem;
+            border-bottom: 1px solid #cbd5e1;
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+
+        .search-section {
+            background: white;
+            border-radius: 28px;
+            padding: 8px 16px 8px 24px;
+            margin-bottom: 28px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03), 0 1px 2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .search-box {
+            flex: 3;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: #f8fafc;
+            padding: 6px 16px;
+            border-radius: 60px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+        }
+
+        .search-box:focus-within {
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+            background: white;
+        }
+
+        .search-icon {
+            color: #94a3b8;
+            font-size: 1.2rem;
+            font-weight: 500;
+        }
+
+        #searchInput {
+            border: none;
+            background: transparent;
+            padding: 12px 0;
+            font-size: 1rem;
+            width: 100%;
+            outline: none;
+            font-weight: 500;
+            color: #0f172a;
+        }
+
+        #searchInput::placeholder {
+            color: #94a3b8;
+            font-weight: normal;
+        }
+
+        .filter-cats {
+            flex: 2;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .cat-badge {
+            background: #f1f5f9;
+            padding: 6px 14px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+            white-space: nowrap;
+        }
+
+        .cat-badge.active {
+            background: #1e293b;
+            color: white;
+            border-color: #1e293b;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        }
+
+        .cat-badge:hover:not(.active) {
+            background: #e2e8f0;
+            transform: translateY(-1px);
+        }
+
+        .reset-btn {
+            background: transparent;
+            border: 1px solid #cbd5e1;
+            padding: 6px 16px;
+            border-radius: 40px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: 0.2s;
+            color: #475569;
+        }
+
+        .reset-btn:hover {
+            background: #eef2ff;
+            border-color: #3b82f6;
+            color: #1e40af;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            margin: 12px 6px 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .result-count {
+            background: #e6edf5;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1e293b;
+        }
+
+        .active-filters {
+            font-size: 0.75rem;
+            color: #475569;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 22px;
+        }
+
+        .term-card {
+            background: white;
+            border-radius: 24px;
+            padding: 1.2rem 1.3rem;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02), 0 1px 2px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+            border: 1px solid #e9eef3;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .term-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 30px -12px rgba(0, 0, 0, 0.1);
+            border-color: #cbd5e1;
+        }
+
+        .term-header {
+            display: flex;
+            align-items: baseline;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 12px;
+            border-bottom: 2px dashed #eef2ff;
+            padding-bottom: 8px;
+        }
+
+        .term-name {
+            font-size: 1.45rem;
+            font-weight: 700;
+            letter-spacing: -0.3px;
+            background: linear-gradient(145deg, #0f172a, #2c3e50);
+            background-clip: text;
+            -webkit-background-clip: text;
+            color: transparent;
+        }
+
+        .term-aliases {
+            font-size: 0.7rem;
+            background: #f1f5f9;
+            padding: 2px 8px;
+            border-radius: 30px;
+            color: #334155;
+            font-family: monospace;
+            font-weight: 500;
+        }
+
+        .term-desc {
+            font-size: 0.92rem;
+            color: #1e293b;
+            margin: 12px 0 14px;
+            line-height: 1.45;
+            flex: 1;
+        }
+
+        .term-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 8px;
+            align-items: center;
+        }
+
+        .tag {
+            background: #eef2ff;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #1e40af;
+            letter-spacing: 0.2px;
+        }
+
+        .cat-tag {
+            background: #e6f0fa;
+            color: #155e75;
+            font-weight: 600;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            background: white;
+            border-radius: 48px;
+            margin-top: 20px;
+            color: #64748b;
+            border: 1px solid #e2e8f0;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 48px;
+            font-size: 0.75rem;
+            color: #6c757d;
+            opacity: 0.7;
+        }
+
+        /* подсветка поиска */
+        .highlight {
+            background-color: #fef9c3;
+            color: #0f172a;
+            font-weight: 500;
+            border-radius: 4px;
+            padding: 0 2px;
+        }
+
+        @media (max-width: 700px) {
+            body {
+                padding: 16px;
+            }
+            .search-section {
+                flex-direction: column;
+                align-items: stretch;
+                border-radius: 24px;
+                padding: 12px;
+            }
+            .filter-cats {
+                justify-content: flex-start;
+                overflow-x: auto;
+
+
+padding-bottom: 6px;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+            .term-name {
+                font-size: 1.25rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="glossary-container">
+    <div class="header">
+        <h1>ITermins</h1>
+        <div class="sub">- найди то самое определение!</div>
+    </div>
+
+    <div class="search-section">
+        <div class="search-box">
+            <span class="search-icon">🔍</span>
+            <input type="text" id="searchInput" placeholder="Поиск по названию, описанию, тегам... (например: Git, баг, сеньор)" autocomplete="off">
+        </div>
+        <div class="filter-cats" id="categoryFilterContainer">
+            <!-- категории подгрузятся из данных динамически -->
+        </div>
+        <button class="reset-btn" id="resetFiltersBtn">Сбросить все</button>
+    </div>
+
+    <div class="stats">
+        <div class="result-count" id="resultCount">📚 Найдено терминов: <span>0</span></div>
+        <div class="active-filters" id="activeFilterHint"></div>
+    </div>
+
+    <div id="cardsContainer" class="cards-grid">
+        <!-- динамическая отрисовка карточек -->
+    </div>
+    <footer>Кошман Сергей КС-21 - 2026</footer>
+</div>
+
+<script>
+    // --------------------------------------------------------------
+    // ИСХОДНЫЕ ДАННЫЕ (все термины, 80 штук)
+    // --------------------------------------------------------------
+    const termsData = [
+        // Категория: Общая разработка (General Dev) - 10 шт
+        { id: 1, name: "Фронтенд", aliases: "Frontend", desc: "Клиентская часть приложения, с которой взаимодействует пользователь (интерфейс).", tags: ["General", "Web"], category: "Общая разработка" },
+        { id: 2, name: "Бэкенд", aliases: "Backend", desc: "Серверная часть, скрытая от глаз пользователя (логика, базы данных).", tags: ["General", "Web"], category: "Общая разработка" },
+        { id: 3, name: "Фулстек", aliases: "Fullstack", desc: "Разработчик, который умеет работать и с фронтендом, и с бэкендом.", tags: ["General", "Roles"], category: "Общая разработка" },
+        { id: 4, name: "Фреймворк", aliases: "Framework", desc: "Каркас для разработки, задающий структуру проекта и предоставляющий готовые модули (React, Django).", tags: ["General", "Tools"], category: "Общая разработка" },
+        { id: 5, name: "Библиотека", aliases: "Library", desc: "Набор готовых функций для решения конкретных задач, который разработчик вызывает сам.", tags: ["General", "Tools"], category: "Общая разработка" },
+        { id: 6, name: "API", aliases: "Эй-Пи-Ай", desc: "Интерфейс программирования приложений. Способ, как разные программы общаются между собой.", tags: ["General", "Backend"], category: "Общая разработка" },
+        { id: 7, name: "CRUD", aliases: "Круд", desc: "Акроним: Create, Read, Update, Delete. Базовые операции с данными в любой системе.", tags: ["General", "Databases"], category: "Общая разработка" },
+        { id: 8, name: "Дебаггинг", aliases: "Debugging", desc: "Процесс поиска и исправления багов (ошибок) в коде.", tags: ["Process"], category: "Общая разработка" },
+        { id: 9, name: "Деплой", aliases: "Deploy", desc: "Процесс публикации готового кода на сервер, чтобы приложение заработало для пользователей.", tags: ["DevOps", "Process"], category: "Общая разработка" },
+        { id: 10, name: "Репозиторий", aliases: "Repo", desc: "Место (папка на сервере), где хранится код проекта и его история изменений (обычно на GitHub/GitLab).", tags: ["Tools", "VCS"], category: "Общая разработка" },
+        
+        // Git и командная работа - 9 шт
+        { id: 11, name: "Гит", aliases: "Git", desc: "Система контроля версий. Сохраняет историю изменений кода.", tags: ["Tools", "VCS"], category: "Git и командная работа" },
+        { id: 12, name: "Коммит", aliases: "Commit", desc: "Сохранение «слепка» изменений кода в истории Git с сообщением.", tags: ["VCS"], category: "Git и командная работа" },
+        { id: 13, name: "Пуш", aliases: "Push", desc: "Отправка сохраненных коммитов из локального репозитория на удаленный сервер.", tags: ["VCS"], category: "Git и командная работа" },
+        { id: 14, name: "Пул", aliases: "Pull", desc: "Загрузка изменений с удаленного сервера в локальный репозиторий.", tags: ["VCS"], category: "Git и командная работа" },
+        { id: 15, name: "Пул-реквест / Мёрж-реквест", aliases: "PR/MR", desc: "Запрос на вливание твоих изменений в основную ветку кода.", tags: ["VCS", "Team"], category: "Git и командная работа" },
+        { id: 16, name: "Мёрж", aliases: "Merge", desc: "Слияние одной ветки кода с другой.", tags: ["VCS"], category: "Git и командная работа" },
+        { id: 17, name: "Конфликт", aliases: "Conflict", desc: "Ситуация, когда два разработчика изменили один и тот же файл по-разному, и Git не может решить, что оставить.", tags: ["VCS", "Problem"], category: "Git и командная работа" },
+        { id: 18, name: "Ветка", aliases: "Branch", desc: "Независимая линия разработки, чтобы не ломать основную версию.", tags: ["VCS"], category: "Git и командная работа" },
+        { id: 19, name: "Биссект", aliases: "Bisect", desc: "Метод деления пополам в Git для автоматического поиска «плохого» коммита, сломавшего код.", tags: ["VCS", "Debug"], category: "Git и командная работа" },
+        
+        // Ошибки и проблемы - 7 шт
+        { id: 20, name: "Баг", aliases: "Bug", desc: "Ошибка в программе, приводящая к неожиданному поведению.", tags: ["QA", "Problem"], category: "Ошибки и проблемы" },
+        { id: 21, name: "Хотфикс", aliases: "Hotfix", desc: "Срочное исправление критического бага на работающем сервере, минуя обычный цикл разработки.", tags: ["Process", "Fix"], category: "Ошибки и проблемы" },
+        { id: 22, name: "Крэш", aliases: "Crash", desc: "Аварийное завершение программы ('вылет').", tags: ["Problem"], category: "Ошибки и проблемы" },
+        { id: 23, name: "Глитч", aliases: "Glitch", desc: "Случайный, кратковременный сбой в системе, часто визуальный.", tags: ["Problem", "Slang"], category: "Ошибки и проблемы" },
+        { id: 24, name: "Баттлнек", aliases: "Bottleneck", desc: "«Бутылочное горлышко», самое узкое место в системе, тормозящее всю работу.", tags: ["Problem", "Performance"], category: "Ошибки и проблемы" },
+        { id: 25, name: "Легаси", aliases: "Legacy", desc: "Устаревший код, который страшно трогать, но нужно поддерживать. Часто без тестов и документации.", tags: ["Slang", "Problem"], category: "Ошибки и проблемы" },
+        { id: 26, name: "Газировать", aliases: "Heisenbug", desc: "Тип бага, который исчезает или меняет поведение при попытке его отладить.", tags: ["Slang", "Debug"], category: "Ошибки и проблемы" },
+        
+        // Процессы и методологии - 9 шт
+        { id: 27, name: "Спринт", aliases: "Sprint", desc: "Короткий промежуток времени (1-4 недели), за который команда должна сделать определенный объем задач.", tags: ["Agile", "Scrum"], category: "Процессы и методологии" },
+        { id: 28, name: "Скрам", aliases: "Scrum", desc: "Гибкая методология управления проектами с ролями (скрам-мастер) и ритуалами (стендапы).", tags: ["Management"], category: "Процессы и методологии" },
+        { id: 29, name: "Стендап / Дейли", aliases: "Standup", desc: "Ежедневная короткая встреча команды стоя, где каждый отвечает на 3 вопроса (что сделал, что будет делать, есть ли блокеры).", tags: ["Meeting", "Agile"], category: "Процессы и методологии" },
+        { id: 30, name: "Майлстоун", aliases: "Milestone", desc: "«Веха», контрольная точка в проекте (например, релиз версии 2.0).", tags: ["Management"], category: "Процессы и методологии" },
+        { id: 31, name: "Рефакторинг", aliases: "Refactoring", desc: "Улучшение внутренней структуры кода без изменения его внешнего поведения (наведение порядка).", tags: ["Process"], category: "Процессы и методологии" },
+        { id: 32, name: "Перформ-ревью", aliases: "Performance Review", desc: "Оценка эффективности работы сотрудника за период (обычно проводится раз в год/полгода).", tags: ["Career"], category: "Процессы и методологии" },
+        { id: 33, name: "Онбординг", aliases: "Onboarding", desc: "Введение нового сотрудника в курс дела и процессы компании.", tags: ["Career"], category: "Процессы и методологии" },
+        { id: 34, name: "Брейншторм", aliases: "Brainstorm", desc: "Мозговой штурм, генерация идей без критики.", tags: ["Meeting"], category: "Процессы и методологии" },
+        { id: 35, name: "Фидбек", aliases: "Feedback", desc: "Обратная связь по работе или коду.", tags: ["Team"], category: "Процессы и методологии" },
+        
+        // Сленг - 20 шт
+        { id: 36, name: "Фича", aliases: "Feature", desc: "Функция, полезная возможность программы. 'Это не баг, а фича!' (саркастичное оправдание ошибки).", tags: ["Slang"], category: "Сленг" },
+        { id: 37, name: "Костыль", aliases: "Crutch/Kludge", desc: "Временное, некрасивое решение проблемы, которое должно быть переделано позже (но часто остается навсегда).", tags: ["Slang", "Problem"], category: "Сленг" },
+        { id: 38, name: "Велосипед", aliases: "Bicycle", desc: "Изобретение своего решения, когда уже есть готовые и проверенные библиотеки.", tags: ["Slang", "Antipattern"], category: "Сленг" },
+        { id: 39, name: "Спагетти код", aliases: "Spaghetti code", desc: "Плохой, запутанный, сложный для чтения и поддержки код.", tags: ["Slang", "Antipattern"], category: "Сленг" },
+        { id: 40, name: "Резиновая утка", aliases: "Rubber duck", desc: "Метод отладки, когда ты объясняешь свой код неодушевленному предмету и внезапно находишь ошибку сам.", tags: ["Slang", "Debug"], category: "Сленг" },
+        { id: 41, name: "Тудушка", aliases: "TODO", desc: "Пометка в коде 'To Do', означающая, что сюда нужно вернуться позже и дописать/поправить.", tags: ["Slang"], category: "Сленг" },
+        { id: 42, name: "Фича-фриз", aliases: "Feature Freeze", desc: "Заморозка добавления новых функций перед релизом, чтобы чинить баги.", tags: ["Slang", "Release"], category: "Сленг" },
+        { id: 43, name: "Прод", aliases: "Production", desc: "Сервер, на котором крутится версия приложения для реальных пользователей. Святое место.", tags: ["DevOps", "Slang"], category: "Сленг" },
+        { id: 44, name: "Стенд / Стейдж", aliases: "Stage/Staging", desc: "Тестовый сервер, копия прода, где проверяют работу перед релизом.", tags: ["DevOps"], category: "Сленг" },
+        { id: 45, name: "Джун", aliases: "Junior", desc: "Начинающий разработчик, которому нужна помощь наставника.", tags: ["Roles", "Career"], category: "Сленг" },
+        { id: 46, name: "Мидл", aliases: "Middle", desc: "Разработчик среднего уровня, самостоятельный в рамках задач.", tags: ["Roles"], category: "Сленг" },
+        { id: 47, name: "Сеньор", aliases: "Senior", desc: "Опытный разработчик, решающий сложные архитектурные задачи и менторящий других.", tags: ["Roles"], category: "Сленг" },
+        { id: 48, name: "Лид", aliases: "Team Lead", desc: "Руководитель команды разработки. Меньше кода, больше менеджмента.", tags: ["Roles"], category: "Сленг" },
+        { id: 49, name: "Техлид", aliases: "Tech Lead", desc: "Технический лидер, главный архитектор команды.", tags: ["Roles"], category: "Сленг" },
+        { id: 50, name: "Сиви", aliases: "CV/Resume", desc: "Профессиональное резюме.", tags: ["Career", "Slang"], category: "Сленг" },
+        { id: 51, name: "Офер", aliases: "Offer", desc: "Официальное предложение о работе (Job Offer).", tags: ["Career"], category: "Сленг" },
+        { id: 52, name: "Кейс", aliases: "Case", desc: "Деловая задача или описание проекта в портфолио.", tags: ["Career"], category: "Сленг" },
+        { id: 53, name: "Эстимейт", aliases: "Estimate", desc: "Оценка времени на выполнение задачи. Часто ошибочная.", tags: ["Management"], category: "Сленг" },
+        { id: 54, name: "Бэклог", aliases: "Backlog", desc: "Список хотелок и задач, которые нужно сделать.", tags: ["Agile"], category: "Сленг" },
+        { id: 55, name: "Смоук-тест", aliases: "Smoke test", desc: "Быстрые тесты основных сценариев, чтобы понять, не развалилось ли всё полностью.", tags: ["QA"], category: "Сленг" },
+        
+        // DevOps и качество - 11 шт
+        { id: 56, name: "CI/CD", aliases: "CI CD", desc: "Непрерывная интеграция и доставка. Автоматический прогон тестов и деплой при каждом пуше кода.", tags: ["DevOps"], category: "DevOps и качество" },
+        { id: 57, name: "Докер", aliases: "Docker", desc: "Платформа для упаковки приложения в изолированный контейнер, чтобы оно работало везде одинаково.", tags: ["DevOps", "Tools"], category: "DevOps и качество" },
+        { id: 58, name: "Кубер", aliases: "Kubernetes/K8s", desc: "Система оркестровки для управления множеством контейнеров.", tags: ["DevOps", "Hard"], category: "DevOps и качество" },
+        { id: 59, name: "Пайплайн", aliases: "Pipeline", desc: "Цепочка автоматических действий (сборка, тесты, выкладка).", tags: ["DevOps"], category: "DevOps и качество" },
+        { id: 60, name: "Инфра", aliases: "Infra", desc: "Инфраструктура: серверы, сеть, базы данных.", tags: ["DevOps"], category: "DevOps и качество" },
+        { id: 61, name: "Мониторинг", aliases: "Monitoring", desc: "Слежка за состоянием системы (нагрузка, память, ошибки).", tags: ["DevOps"], category: "DevOps и качество" },
+        { id: 62, name: "Инцидент", aliases: "Incident", desc: "Серьезное происшествие на проде (например, сайт упал).", tags: ["DevOps", "Problem"], category: "DevOps и качество" },
+        { id: 63, name: "Алерт", aliases: "Alert", desc: "Оповещение в мессенджере/почте о том, что в системе что-то сломалось.", tags: ["DevOps"], category: "DevOps и качество" },
+        { id: 64, name: "Юнит-тест", aliases: "Unit test", desc: "Тестирование отдельного маленького кусочка кода (функции, метода).", tags: ["QA"], category: "DevOps и качество" },
+        { id: 65, name: "Интеграционный тест", aliases: "Integration test", desc: "Проверка взаимодействия нескольких модулей.", tags: ["QA"], category: "DevOps и качество" },
+        { id: 66, name: "Покрытие", aliases: "Coverage", desc: "Процент кода, покрытый тестами.", tags: ["QA"], category: "DevOps и качество" },
+        
+        // Базы данных и архитектура - 8 шт
+        { id: 67, name: "SQL", aliases: "Секвел", desc: "Язык структурированных запросов для реляционных баз данных.", tags: ["Databases"], category: "Базы данных и архитектура" },
+        { id: 68, name: "NoSQL", aliases: "Ноу-Секвел", desc: "Нереляционные базы данных (MongoDB, Redis), работающие с документами, ключами-значениями.", tags: ["Databases"], category: "Базы данных и архитектура" },
+        { id: 69, name: "Миграция", aliases: "Migration", desc: "Скрипт, изменяющий структуру базы данных (добавление таблиц, колонок) без потери данных.", tags: ["Databases", "Backend"], category: "Базы данных и архитектура" },
+        { id: 70, name: "Шардинг", aliases: "Sharding", desc: "Разделение большой базы данных на независимые части (шарды) для ускорения работы.", tags: ["Databases", "Architecture"], category: "Базы данных и архитектура" },
+        { id: 71, name: "Скалирование", aliases: "Scaling", desc: "Увеличение мощности системы при росте нагрузки (добавление серверов).", tags: ["Architecture"], category: "Базы данных и архитектура" },
+        { id: 72, name: "Микросервисы", aliases: "Microservices", desc: "Архитектура, где приложение разбито на маленькие независимые сервисы. В отличие от монолита.", tags: ["Architecture"], category: "Базы данных и архитектура" },
+        { id: 73, name: "Монолит", aliases: "Monolith", desc: "Приложение, написанное одним большим куском, где всё связано воедино.", tags: ["Architecture"], category: "Базы данных и архитектура" },
+        { id: 74, name: "Кэш", aliases: "Cache", desc: "Промежуточный быстрый буфер памяти (Redis) для хранения частозапрашиваемых данных (чтобы не гонять тяжелые запросы в БД).", tags: ["Performance"], category: "Базы данных и архитектура" },
+        
+        // Интернет и сети - 6 шт
+        { id: 75, name: "Айпи", aliases: "IP Address", desc: "Уникальный сетевой адрес компьютера в сети.", tags: ["Network", "Basics"], category: "Интернет и сети" },
+        { id: 76, name: "ДНС", aliases: "DNS", desc: "Система доменных имен: превращает название сайта (google.com) в IP-адрес, понятный машине.", tags: ["Network"], category: "Интернет и сети" },
+        { id: 77, name: "HTTP / HTTPS", aliases: "HTTP HTTPS", desc: "Протокол передачи данных в интернете (с шифрованием или без).", tags: ["Web"], category: "Интернет и сети" },
+        { id: 78, name: "VPN", aliases: "ВПН", desc: "Виртуальная частная сеть. Создает зашифрованный туннель между устройством и сетью.", tags: ["Security", "Network"], category: "Интернет и сети" },
+        { id: 79, name: "Фаервол", aliases: "Firewall", desc: "Межсетевой экран, фильтрующий входящий и исходящий трафик для защиты от атак.", tags: ["Security"], category: "Интернет и сети" },
+        { id: 80, name: "Пинг", aliases: "Ping", desc: "Утилита проверки доступности удаленного сервера и задержки сигнала. 'Сделай пинг до сервера'.", tags: ["Network"], category: "Интернет и сети" }
+    ];
+
+    // Уникальные категории (с сортировкой для удобства)
+    const categoriesSet = [...new Set(termsData.map(t => t.category))].sort();
+    
+    let currentCategory = "Все категории";
+    let searchQuery = "";
+
+    function renderFilters() {
+        const container = document.getElementById("categoryFilterContainer");
+        container.innerHTML = '';
+        
+        // Кнопка "Все категории"
+        const allBtn = document.createElement('div');
+        allBtn.className = `cat-badge ${currentCategory === "Все категории" ? 'active' : ''}`;
+        allBtn.textContent = "📌 Все категории";
+        allBtn.addEventListener('click', () => {
+            currentCategory = "Все категории";
+            updateActiveFilters();
+            renderCards();
+            updateFilterButtons();
+        });
+        container.appendChild(allBtn);
+
+        // Кнопки по категориям
+        categoriesSet.forEach(cat => {
+            const btn = document.createElement('div');
+            btn.className = `cat-badge ${currentCategory === cat ? 'active' : ''}`;
+            btn.textContent = cat;
+            btn.addEventListener('click', () => {
+                currentCategory = cat;
+                updateActiveFilters();
+                renderCards();
+                updateFilterButtons();
+            });
+            container.appendChild(btn);
+        });
+    }
+    
+    function updateFilterButtons() {
+        const buttons = document.querySelectorAll('.cat-badge');
+        buttons.forEach(btn => {
+            const isAllBtn = btn.textContent === "📌 Все категории";
+            if ((isAllBtn && currentCategory === "Все категории") || 
+                (!isAllBtn && btn.textContent === currentCategory)) {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+
+    function updateActiveFilters() {
+        const hintDiv = document.getElementById("activeFilterHint");
+        let hints = [];
+        if (currentCategory !== "Все категории") {
+            hints.push(`📂 Категория: ${currentCategory}`);
+        }
+        if (searchQuery.trim() !== "") {
+            hints.push(`🔎 Поиск: «${escapeHtml(searchQuery.trim())}»`);
+        }
+        if (hints.length === 0) {
+            hintDiv.innerHTML = `✨ Показаны все термины (${termsData.length})`;
+        } else {
+            hintDiv.innerHTML = hints.join('  |  ');
+        }
+    }
+
+    // Функция для подсветки текста
+    function highlightText(text, query) {
+        if (!query || query.trim() === "") return escapeHtml(text);
+        const escapedQuery = query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        const regex = new RegExp(`(${escapedQuery})`, 'gi');
+        return escapeHtml(text).replace(regex, `<span class="highlight">$1</span>`);
+    }
+
+    function filterTerms() {
+        let filtered = [...termsData];
+        
+        // Фильтр по категории
+        if (currentCategory !== "Все категории") {
+            filtered = filtered.filter(term => term.category === currentCategory);
+        }
+        
+        // Текстовый поиск
+        if (searchQuery.trim() !== "") {
+            const q = searchQuery.trim().toLowerCase();
+            filtered = filtered.filter(term => 
+                term.name.toLowerCase().includes(q) ||
+                term.aliases.toLowerCase().includes(q) ||
+                term.desc.toLowerCase().includes(q) ||
+                term.tags.some(tag => tag.toLowerCase().includes(q))
+            );
+        }
+        return filtered;
+    }
+
+    function renderCards() {
+        const filtered = filterTerms();
+        const container = document.getElementById("cardsContainer");
+        const countSpan = document.querySelector("#resultCount span");
+        countSpan.textContent = filtered.length;
+        
+        const queryForHighlight = searchQuery.trim();
+
+        if (filtered.length === 0) {
+            container.innerHTML = `<div class="empty-state">🤔 Ничего не найдено... Попробуй другой запрос или сбрось фильтры.
+💡 Например: «Git», «баг», «сеньор» или «DevOps»</div>`;
+            return;
+        }
+
+        container.innerHTML = filtered.map(term => {
+            const highlightedName = queryForHighlight ? highlightText(term.name, queryForHighlight) : escapeHtml(term.name);
+            const highlightedAliases = queryForHighlight ? highlightText(term.aliases, queryForHighlight) : escapeHtml(term.aliases);
+            const highlightedDesc = queryForHighlight ? highlightText(term.desc, queryForHighlight) : escapeHtml(term.desc);
+            
+            return `
+            <div class="term-card">
+                <div class="term-header">
+                    <span class="term-name">${highlightedName}</span>
+                    <span class="term-aliases">${highlightedAliases}</span>
+                </div>
+                <div class="term-desc">${highlightedDesc}</div>
+                <div class="term-tags">
+                    <span class="tag cat-tag">📂 ${escapeHtml(term.category)}</span>
+                    ${term.tags.map(tag => `<span class="tag">#${escapeHtml(tag)}</span>`).join('')}
+                </div>
+            </div>
+        `}).join('');
+    }
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
+        });
+    }
+
+    // Обработчики UI
+    const searchInput = document.getElementById("searchInput");
+    searchInput.addEventListener("input", (e) => {
+        searchQuery = e.target.value;
+        updateActiveFilters();
+        renderCards();
+    });
+
+    const resetBtn = document.getElementById("resetFiltersBtn");
+    resetBtn.addEventListener("click", () => {
+        currentCategory = "Все категории";
+        searchQuery = "";
+        searchInput.value = "";
+        updateActiveFilters();
+        updateFilterButtons();
+        renderCards();
+    });
+
+    // Инициализация (все термины видны сразу)
+    renderFilters();
+    updateActiveFilters();
+    renderCards();
+</script>
+</body>
+</html>
